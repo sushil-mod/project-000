@@ -1,7 +1,7 @@
 "use client";
 
-import { useRef } from "react";
-import { motion, useInView } from "framer-motion";
+import { useEffect, useRef } from "react";
+import { motion, useInView, MotionValue, useMotionValue, useTransform, animate } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import ScrollAnimation from "@/components/scroll-animation";
 
@@ -54,17 +54,21 @@ export default function StatsSection() {
   );
 }
 
-function Counter({ from, to, duration = 2, decimals = 0 }) {
-  const nodeRef = useRef(null);
+type CounterProps = {
+  from: number;
+  to: number;
+  duration?: number;
+  decimals?: number;
+};
 
-  return (
-    <motion.span
-      ref={nodeRef}
-      initial={{ count: from }}
-      animate={{ count: to }}
-      transition={{ duration, type: "spring", damping: 10 }}
-    >
-      {({ count }) => Math.floor(count).toLocaleString()}
-    </motion.span>
-  );
+function Counter({ from, to, duration = 2, decimals = 0 }: CounterProps) {
+  const count = useMotionValue(from);
+  const rounded = useTransform(count, (latest) => Number(latest).toFixed(decimals));
+
+  useEffect(() => {
+    const controls = animate(count, to, { duration }); // ✅ Correct way to animate
+    return controls.stop; // Cleanup function
+  }, [to, count, duration]);
+
+  return <motion.span>{rounded}</motion.span>;
 }

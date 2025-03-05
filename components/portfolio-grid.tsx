@@ -67,10 +67,19 @@ const projects = [
     link: "#"
   }
 ];
+type Project = {
+  id: number;
+  title: string;
+  category: string;
+  image: string;
+  description: string;
+  technologies: string[];
+  link: string;
+};
 
 export default function PortfolioGrid() {
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [selectedProject, setSelectedProject] = useState(null);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   const filteredProjects = selectedCategory === "All"
     ? projects
